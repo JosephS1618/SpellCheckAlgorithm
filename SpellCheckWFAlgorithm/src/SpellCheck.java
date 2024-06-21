@@ -39,7 +39,7 @@ public class SpellCheck {
 
         for (int x = 1; x < distanceArray.length; x++) {
             for (int y = 1; y < distanceArray[x].length; y++) {
-                if (compareChar(wrd1.charAt(x-1), wrd2.charAt(y-1))) {
+                if (compareChar(wrd1.charAt(x-1), wrd2.charAt(y-1)) && !checkRepeat(x, y, wrd1, wrd2)) {
                     distanceArray[x][y] = findMin(x, y);
                 } else {
                     distanceArray[x][y] = findMin(x, y) + 1;
@@ -54,7 +54,17 @@ public class SpellCheck {
         return Character.toLowerCase(c1) == Character.toLowerCase(c2);
     }
 
-    //finds the lowest distance from the corner, top, or left of the start value.
+    //Covers cases where repeating chars (e.g. "tt", "oo") are not accounted for
+    //returns true if the given char is preceded by the same char
+    //false otherwise. Uses an XOR operator to compare either for the first word or second word
+    private boolean checkRepeat(int x, int y, String wrd1, String wrd2) {
+        if (x == 1 || y == 1) {
+            return false;
+        }
+        return compareChar(wrd2.charAt(y-1), wrd2.charAt(y-2)) ^ compareChar(wrd1.charAt(x-1), wrd1.charAt(x-2));
+    }
+
+    //finds the lowest distance between the corner, top, or left of the start value.
     private int findMin(int startX, int startY) {
         int corner = distanceArray[startX-1][startY-1];
         int top = distanceArray[startX-1][startY];
